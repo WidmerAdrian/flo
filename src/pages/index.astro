@@ -1,7 +1,7 @@
 ---
 import { existsSync, readFileSync } from "node:fs";
 import "../styles/site.css";
-import { BOOK, FORM, MAPS, PHONE, REGIONS, TEL, TREATMENTS } from "../data/content.js";
+import { MAPS, PHONE, REGIONS, TEL, TREATMENTS } from "../data/content.js";
 import body from "../data/body.json";
 import Seo from "../components/Seo.astro";
 import { HOURS } from "../data/content.js";
@@ -123,9 +123,8 @@ const figures = SHOW_FIGURES ? cards.map((c) => `{\n${file(`figures/${c.fig}.js`
       {photos.person && <img class="hero-person" src={photos.person} alt="" fetchpriority="high" decoding="async" />}
     </div>
     <header class="top">
-      <a class="nav" href="#massagen">Massagen</a>
       <a class="brand" id="brand" href="#top" aria-label="Therapiezentrum Strähl"><img src="assets/straehl-logo.png" width="188" height="120" alt="" /><span class="brand-name" aria-hidden="true">Therapiezentrum Strähl</span></a>
-      <a class="nav" href={BOOK} target="_blank" rel="noopener">Termin</a>
+      <a class="nav nav-book" href={TEL} aria-label={`Termin vereinbaren: ${PHONE} anrufen`}><svg class="ic"><use href="#i-phone" /></svg>Termin</a>
     </header>
     <div class="hero-txt wrap intro">
       <div class="hero-title">
@@ -218,8 +217,7 @@ const figures = SHOW_FIGURES ? cards.map((c) => `{\n${file(`figures/${c.fig}.js`
         <div><dt>Krankenkassen</dt><dd>Von allen Krankenkassen anerkannt. Medizinische Massagen rechnen Sie über die Zusatzversicherung ab.</dd></div>
       </dl>
       <div class="th-book rv">
-        <a class="btn" href={BOOK} target="_blank" rel="noopener">Termin bei Florian buchen<svg class="ic"><use href="#i-arrow" /></svg></a>
-        <a class="th-tel" href={TEL}>oder anrufen: {PHONE}</a>
+        <a class="btn" href={TEL}><svg class="ic"><use href="#i-phone" /></svg>Termin bei Florian: {PHONE}</a>
       </div>
     </div>
     </div>
@@ -233,8 +231,7 @@ const figures = SHOW_FIGURES ? cards.map((c) => `{\n${file(`figures/${c.fig}.js`
         <h2 id="h-k">Lassen Sie uns <span class="hl">draufschauen.</span></h2>
         <a class="tel" href={TEL}>{PHONE}</a>
         <div class="cta">
-          <a class="btn" href={BOOK} target="_blank" rel="noopener">Termin buchen<svg class="ic"><use href="#i-arrow" /></svg></a>
-          <a class="btn ghost" href={FORM} target="_blank" rel="noopener">Nachricht schreiben</a>
+          <a class="btn" href={TEL}><svg class="ic"><use href="#i-phone" /></svg>Termin vereinbaren</a>
         </div>
       </div>
       <div class="contact-side">
@@ -252,8 +249,7 @@ const figures = SHOW_FIGURES ? cards.map((c) => `{\n${file(`figures/${c.fig}.js`
 </main>
 
 <nav class="dock" id="dock" aria-label="Kontakt">
-  <a class="dock-call" href={TEL} aria-label={`Anrufen ${PHONE}`}><svg class="ic"><use href="#i-phone" /></svg></a>
-  <a class="dock-book" href={BOOK} target="_blank" rel="noopener">Termin buchen</a>
+  <a class="dock-book" href={TEL} aria-label={`Termin vereinbaren: ${PHONE} anrufen`}><svg class="ic"><use href="#i-phone" /></svg>Termin vereinbaren</a>
 </nav>
 
 <dialog class="sheet" id="sheet" aria-labelledby="sh-title">
@@ -268,8 +264,7 @@ const figures = SHOW_FIGURES ? cards.map((c) => `{\n${file(`figures/${c.fig}.js`
     <div class="sh-body" id="sh-body"></div>
   </div>
   <div class="sh-foot">
-    <a class="btn" href={BOOK} target="_blank" rel="noopener">Termin buchen</a>
-    <a class="btn soft" href={TEL}><svg class="ic"><use href="#i-phone" /></svg>{PHONE}</a>
+    <a class="btn" href={TEL}><svg class="ic"><use href="#i-phone" /></svg>Termin vereinbaren</a>
   </div>
 </dialog>
 

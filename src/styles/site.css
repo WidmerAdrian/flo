@@ -98,6 +98,11 @@ body:has(.splash) #brand img { opacity: 0; animation: brand-show 0s 5s forwards;
 .top { position: absolute; inset: 0 0 auto; z-index: 2; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; height: calc(68px + env(safe-area-inset-top, 0px)); padding: env(safe-area-inset-top, 0px) var(--gr) 0 var(--gl); border-bottom: 1px solid rgba(239, 232, 216, .14); }
 .nav { justify-self: start; display: inline-flex; align-items: center; min-height: 44px; font-size: .9375rem; font-weight: 500; color: var(--cream); }
 .nav:last-child { justify-self: end; }
+/* the header keeps one action: the logo in the middle, Termin as the button on the right */
+.top .brand { grid-column: 2; }
+.nav-book { grid-column: 3; justify-self: end; gap: 7px; min-height: 40px; padding: 0 16px; border-radius: 999px; background: var(--cream); color: #121a14; font-weight: 600; transition: transform .6s var(--spring); }
+.nav-book:active { transform: scale(.95); }
+.nav-book .ic { font-size: 16px; }
 .brand { display: grid; place-items: center; }
 .brand img { width: 44px; height: 44px; padding: 9px 6px; object-fit: contain; background: #fff; border-radius: 50%; }
 .brand-name { display: none; }
@@ -219,7 +224,6 @@ body:has(.splash) #brand img { opacity: 0; animation: brand-show 0s 5s forwards;
 .th-fg { position: absolute; left: -24px; top: -24px; width: calc(100% + 48px); height: calc(100% + 48px); pointer-events: none; }
 .th-fig.on .th-person { visibility: hidden; }
 .th-book { display: grid; justify-items: start; gap: 14px; }
-.th-tel { color: var(--text); font-size: .9375rem; }
 .th-info { display: grid; gap: 28px; margin-top: -40px; position: relative; }
 .th-claim { font-size: clamp(2rem, 8.4vw, 3.25rem); line-height: 1; letter-spacing: -.045em; font-weight: 300; color: var(--cream); }
 .facts > div { display: grid; gap: 3px; padding-block: 16px; border-top: 1px solid var(--line); }
@@ -233,8 +237,8 @@ body:has(.splash) #brand img { opacity: 0; animation: brand-show 0s 5s forwards;
 .contact-grid { display: grid; gap: 40px; }
 .contact-main { display: grid; gap: 18px; }
 .tel { color: var(--cream); font-size: clamp(2.7rem, 13vw, 5.5rem); line-height: 1; font-weight: 300; letter-spacing: -.055em; font-variant-numeric: tabular-nums; user-select: all; -webkit-user-select: all; }
-.cta { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
-.cta .btn { padding: 0 14px; }
+.cta { display: grid; } /* one action: call; full width on phones */
+@media (min-width: 720px) { .cta { justify-items: start; } .cta .btn { min-width: 280px; } }
 .hours li { display: flex; justify-content: space-between; gap: 16px; white-space: nowrap; padding-block: 15px; border-top: 1px solid var(--line); color: var(--text); }
 .hours li.now { color: var(--cream); font-weight: 600; }
 .hours li.now span:first-child::after { content: "Heute"; margin-left: 10px; padding: 3px 9px; border-radius: 999px; background: var(--gold); color: #1a2010; font-size: .75rem; font-weight: 600; vertical-align: 2px; }
@@ -281,8 +285,7 @@ footer { flex-wrap: wrap; }
 .dock { position: fixed; left: 50%; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); z-index: 20; display: flex; gap: 6px; padding: 6px; border-radius: 999px; background: rgba(20, 30, 24, .62); -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%); box-shadow: 0 14px 36px -12px rgba(0, 0, 0, .7), inset 0 0 0 1px var(--line); translate: -50% 150%; transition: translate .9s var(--spring); }
 .dock.on { translate: -50% 0; }
 html:has(dialog[open]) .dock { translate: -50% 150%; }
-.dock-call { display: grid; place-items: center; width: 50px; height: 50px; border-radius: 50%; color: var(--cream); font-size: 20px; box-shadow: inset 0 0 0 1px var(--line); }
-.dock-book { display: flex; align-items: center; height: 50px; padding: 0 24px; border-radius: 999px; background: var(--cream); color: #121a14; font-weight: 600; white-space: nowrap; }
+.dock-book { display: flex; align-items: center; gap: 10px; height: 50px; padding: 0 24px; border-radius: 999px; background: var(--cream); color: #121a14; font-weight: 600; white-space: nowrap; }
 
 /* ── sheet: a native <dialog>; rises like something floating up ── */
 .sheet { position: fixed; inset: auto 0 0; width: 100%; max-width: 580px; max-height: min(88dvh, 780px); margin: 0 auto; padding: 0; border: 0; border-radius: 34px 34px 0 0; background: var(--panel); color: var(--text); overflow: hidden; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08); translate: 0 0; transition: translate .9s var(--flow), overlay .9s allow-discrete, display .9s allow-discrete; }
@@ -345,7 +348,7 @@ html:has(dialog[open]) .dock { translate: -50% 150%; }
 .row { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 56px; padding: 12px 16px; color: var(--cream); }
 .row > span:first-child { flex: 1; min-width: 0; }
 .row .ic { color: var(--dim); font-size: 15px; }
-.sh-foot { flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px 24px calc(16px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(transparent, var(--panel) 30%); margin-top: -30px; position: relative; z-index: 2; }
+.sh-foot { flex: none; display: grid; gap: 10px; padding: 14px 24px calc(16px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(transparent, var(--panel) 30%); margin-top: -30px; position: relative; z-index: 2; }
 .sh-foot .btn { padding: 0 12px; }
 
 /* ── scroll: things drift in as the page moves, natively ── */
@@ -392,8 +395,11 @@ html:has(dialog[open]) .dock { translate: -50% 150%; }
   .hero-txt { justify-items: end; padding-bottom: 72px; }
   /* desktop: the hands come down through the middle, so the logo steps aside to the left and the links go right */
   .top { grid-template-columns: auto 1fr auto; column-gap: 32px; }
-  .top .brand { order: -1; display: flex; align-items: center; gap: 14px; }
+  .top .brand { display: flex; align-items: center; gap: 14px; }
   .top .nav { justify-self: end; }
+  .top .brand { grid-column: 1; }
+  .top .nav-book { min-height: 46px; padding: 0 22px; }
+  .top .nav-book .ic { font-size: 18px; }
   .brand-name { display: block; font-size: .9375rem; font-weight: 500; color: var(--cream); }
   .hero-person { left: 40%; height: min(88svh, 900px); } /* the hands above the headline, the back fading out behind it */
   .hero-lead { font-size: 1.1875rem; }

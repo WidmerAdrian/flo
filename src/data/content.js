@@ -2,8 +2,6 @@
 // general professional knowledge and must be proofread by the practice before going live.
 export const PHONE = "079 239 67 94";
 export const TEL = "tel:+41792396794";
-export const BOOK = "https://www.therapie-straehl.ch/termin-buchen";
-export const FORM = "https://www.therapie-straehl.ch/kontakformular";
 export const MAPS = "https://www.google.com/maps/dir/?api=1&destination=Zimmereiweg%207%2C%204665%20Oftringen";
 
 export const TREATMENTS = {
