@@ -73,7 +73,7 @@ export async function mountBody(hero, stage, { labels, photo, onPick }) {
   function paint(dt) {
     let busy = false;
     for (let r = 1; r < REG.length; r++) {
-      want[r] = r === active ? 0.95 : r === hover ? 0.4 : 0;
+      want[r] = r === active ? 0.95 : r === hover ? 0.85 : 0; // hover: clearly lit, a touch below a pick
       const d = want[r] - glow[r];
       if (Math.abs(d) > 0.004) { glow[r] += d * Math.min(1, dt * 7); busy = true; } else glow[r] = want[r];
     }
