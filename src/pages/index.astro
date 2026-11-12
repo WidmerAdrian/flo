@@ -43,7 +43,58 @@ const figures = SHOW_FIGURES ? cards.map((c) => `{\n${file(`figures/${c.fig}.js`
   <symbol id="i-turn" viewBox="0 0 24 24"><path d="M3 12a9 4 0 0 0 18 0M21 12a9 4 0 0 0-9-4M12 5l-3 3 3 3" /></symbol>
 </svg>
 
-<div class="splash" aria-hidden="true"><div class="splash-logo"><img src="assets/straehl-logo.png" width="188" height="120" alt="" /></div></div>
+<div class="splash" aria-hidden="true"><canvas class="splash-gl"></canvas><div class="splash-logo"><img src="assets/straehl-logo.png" width="188" height="120" alt="" /></div></div>
+<script is:inline>
+  // The splash's water: three bursts of rings run out from the logo, the same decaying wave as a tap in the hero,
+  // lit so their crests catch the light. Only highlights and shadows are drawn; the gradient behind stays CSS.
+  // Runs at once (inline), stops itself after 2.6 s or when the splash is gone.
+  (() => {
+    const c = document.querySelector(".splash-gl");
+    if (!c || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const gl = c.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false });
+    if (!gl) return;
+    const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); return o; };
+    const p = gl.createProgram();
+    gl.attachShader(p, sh(gl.VERTEX_SHADER, "attribute vec2 a; void main(){ gl_Position = vec4(a, 0., 1.); }"));
+    gl.attachShader(p, sh(gl.FRAGMENT_SHADER, `precision highp float;
+      uniform vec2 res; uniform float t, r0, dpr;
+      // height of the water at distance r from the logo: three wave packets, each born a little later
+      float h(float r) {
+        float s = 0.;
+        for (int i = 0; i < 3; i++) {
+          float age = t - (.12 + float(i) * .36); if (age <= 0.) continue;
+          float x = max(r - r0, 0.);
+          s += sin(x * 48. - age * 9.) * exp(-x * 4.) * exp(-age * 1.3) * smoothstep(0., .3, age) * smoothstep(age * .62 + .06, age * .62 - .02, x);
+        }
+        return s;
+      }
+      void main() {
+        vec2 q = (gl_FragCoord.xy - res * .5) / res.y; float r = length(q), e = .0015;
+        float d = (h(r + e) - h(r - e)) / (2. * e);           // slope across the rings
+        vec3 n = normalize(vec3(-normalize(q + 1e-5) * d * .035, 1.));
+        float lit = dot(n, normalize(vec3(-.45, .55, 1.))) - dot(vec3(0., 0., 1.), normalize(vec3(-.45, .55, 1.)));
+        float hi = clamp(lit * 5., 0., 1.) * .32, lo = clamp(-lit * 5., 0., 1.) * .26;
+        float edge = smoothstep(r0 * .92, r0 * 1.08, r);        // nothing on the logo itself
+        hi *= edge; lo *= edge;
+        gl_FragColor = vec4(vec3(.82, .9, .86) * hi, hi + lo); // cream-sage light on the crests, darkness in the troughs
+      }`));
+    gl.linkProgram(p); gl.useProgram(p);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+    const U = (n) => gl.getUniformLocation(p, n), dpr = Math.min(devicePixelRatio, 2);
+    const W = c.width = Math.round(innerWidth * dpr), H = c.height = Math.round(innerHeight * dpr);
+    gl.viewport(0, 0, W, H); gl.uniform2f(U("res"), W, H); gl.uniform1f(U("r0"), 56 / innerHeight); // the logo's radius, in the same units
+    const t0 = performance.now();
+    const frame = (now) => {
+      const t = (now - t0) / 1000;
+      if (!c.isConnected || t > 2.6) return;
+      gl.uniform1f(U("t"), t); gl.drawArrays(gl.TRIANGLES, 0, 3);
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  })();
+</script>
 
 <main id="top">
   <section class="hero" aria-labelledby="h1">
