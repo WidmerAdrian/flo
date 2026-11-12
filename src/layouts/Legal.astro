@@ -1,0 +1,34 @@
+---
+// A plain page for legal texts: same look as the site, no 3D, no water, nothing animated.
+import "../styles/site.css";
+const { title, description } = Astro.props;
+---
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#07140f" />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/png" href="assets/straehl-logo.png" />
+  <title>{title} | Therapiezentrum Strähl</title>
+  <meta name="description" content={description} />
+</head>
+<body class="legal-page">
+<div class="ambient" aria-hidden="true"></div>
+<main>
+  <header class="legal-top wrap">
+    <a class="legal-back" href="./"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7" /></svg>Zur Startseite</a>
+    <a class="brand" href="./" aria-label="Therapiezentrum Strähl, zur Startseite"><img src="assets/straehl-logo.png" width="188" height="120" alt="" /></a>
+  </header>
+  <article class="legal wrap">
+    <h1>{title}</h1>
+    <slot />
+  </article>
+  <footer class="wrap legal-foot">
+    <span>© 2026 Therapiezentrum Strähl, Oftringen</span>
+    <nav aria-label="Rechtliches"><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></nav>
+  </footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,78 @@
+---
+import Legal from "../layouts/Legal.astro";
+import { OPERATOR as O, PRACTICE as P, HOSTING as H, UPDATED } from "../data/legal.js";
+import { BOOK, FORM } from "../data/content.js";
+---
+<Legal title="Datenschutzerklärung" description="Wie das Therapiezentrum Strähl mit Ihren Personendaten umgeht.">
+  <p class="legal-lead">Diese Website ist so gebaut, dass sie möglichst wenig über Sie erfährt: keine Cookies, kein Tracking, keine Werbung. Hier steht, welche Daten trotzdem anfallen und wofür.</p>
+
+  <section>
+    <h2>1. Verantwortliche Stelle</h2>
+    <address>{O.name}<br />{O.person}<br />{O.street}<br />{O.city}<br />{O.country}</address>
+    <p>E-Mail: <a href={`mailto:${O.email}`}>{O.email}</a>, Telefon: <a href={`tel:${O.phone.replace(/\s/g, "")}`}>{O.phone}</a></p>
+    <p>Behandlungen und Inhalte: {P.name}, {P.person}, {P.street}, {P.city}.</p>
+  </section>
+
+  <section>
+    <h2>2. Grundlagen</h2>
+    <p>Wir bearbeiten Personendaten nach dem Schweizer Bundesgesetz über den Datenschutz (DSG) und der Datenschutzverordnung (DSV). Soweit im Einzelfall die Datenschutz-Grundverordnung der EU (DSGVO) anwendbar ist, halten wir auch diese ein. Wir bearbeiten nur die Daten, die für den jeweiligen Zweck nötig sind.</p>
+  </section>
+
+  <section>
+    <h2>3. Besuch dieser Website</h2>
+    <ul>
+      <li>Wir setzen keine Cookies und speichern nichts im Speicher Ihres Browsers.</li>
+      <li>Wir verwenden keine Analyse-, Tracking- oder Werbedienste und keine Social-Media-Plugins.</li>
+      <li>Schriften, Bilder, Programmcode und das 3D-Modell werden von unserem eigenen Webhosting geladen. Beim Aufruf der Seite werden keine Daten an andere Dienste übermittelt.</li>
+      <li>Die 3D-Figur und die Animationen werden ausschliesslich auf Ihrem Gerät berechnet. Welche Körperregion Sie antippen, wird weder übertragen noch gespeichert.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>4. Hosting und Server-Logdateien</h2>
+    <p>Diese Website wird von {H.name}, {H.place}, betrieben (Hosting). Bei jedem Aufruf verarbeitet {H.name} technisch notwendige Angaben: Ihre IP-Adresse, Datum und Uhrzeit, die aufgerufene Seite, die zuvor besuchte Seite (Referrer) sowie Browser und Betriebssystem. Diese Daten dienen dem sicheren und stabilen Betrieb der Website, etwa der Abwehr von Angriffen, und werden nur so lange aufbewahrt, wie es dafür nötig ist.</p>
+    <p>Die Server von {H.name} können sich ausserhalb der Schweiz befinden, auch in den USA. Die Übermittlung stützt sich auf das Swiss-U.S. Data Privacy Framework, unter dem {H.name} zertifiziert ist, oder auf die vom Eidgenössischen Datenschutz- und Öffentlichkeitsbeauftragten anerkannten Standardvertragsklauseln. Mehr dazu in der <a href={H.privacy} target="_blank" rel="noopener">Datenschutzerklärung von {H.name}</a>.</p>
+  </section>
+
+  <section>
+    <h2>5. Kontakt per Telefon oder E-Mail</h2>
+    <p>Wenn Sie uns anrufen oder schreiben, verwenden wir Ihre Angaben (zum Beispiel Name, Telefonnummer, E-Mail-Adresse und Ihr Anliegen), um Ihre Anfrage zu beantworten und Termine zu vereinbaren.</p>
+  </section>
+
+  <section>
+    <h2>6. Online-Terminbuchung und Kontaktformular</h2>
+    <p>Die Knöpfe «Termin buchen» und «Nachricht schreiben» führen zu separaten Seiten unter <a href={BOOK} target="_blank" rel="noopener">therapie-straehl.ch</a>. Was Sie dort eingeben, wird von diesem Angebot bearbeitet. Es gilt die dortige Datenschutzerklärung. Diese Website selbst überträgt dabei keine Daten.</p>
+  </section>
+
+  <section>
+    <h2>7. Routenplanung mit Google Maps</h2>
+    <p>Der Knopf «Route» öffnet Google Maps in einem neuen Fenster. Erst durch diesen Klick werden Daten an Google übermittelt, unter anderem Ihre IP-Adresse und das Ziel der Route. Google kann diese Daten in den USA bearbeiten. Es gilt die <a href="https://policies.google.com/privacy?hl=de" target="_blank" rel="noopener">Datenschutzerklärung von Google</a>.</p>
+  </section>
+
+  <section>
+    <h2>8. Gesundheitsdaten bei der Behandlung</h2>
+    <p>Im Rahmen einer Behandlung bearbeiten wir Gesundheitsdaten. Das sind besonders schützenswerte Personendaten. Sie unterliegen dem Berufsgeheimnis und werden nur für Ihre Behandlung, die Dokumentation und die Abrechnung verwendet. Für die Abrechnung über Ihre Zusatzversicherung geben wir Ihrem Versicherer nur die dafür nötigen Angaben bekannt. Behandlungsunterlagen bewahren wir so lange auf, wie es die gesetzlichen Aufbewahrungspflichten verlangen.</p>
+  </section>
+
+  <section>
+    <h2>9. Weitergabe an Dritte</h2>
+    <p>Wir verkaufen keine Daten und geben sie nur weiter, wenn es für die genannten Zwecke nötig ist (Hosting, Abrechnung mit Versicherern), wenn Sie eingewilligt haben oder wenn wir gesetzlich dazu verpflichtet sind.</p>
+  </section>
+
+  <section>
+    <h2>10. Datensicherheit</h2>
+    <p>Die Verbindung zu dieser Website ist verschlüsselt (HTTPS). Wir treffen angemessene technische und organisatorische Massnahmen, um Ihre Daten vor Verlust und unbefugtem Zugriff zu schützen.</p>
+  </section>
+
+  <section>
+    <h2>11. Ihre Rechte</h2>
+    <p>Sie können jederzeit Auskunft über Ihre Daten verlangen (Art. 25 DSG), unrichtige Daten berichtigen und Daten löschen lassen, der Bearbeitung widersprechen und die Herausgabe oder Übertragung Ihrer Daten verlangen (Art. 28 DSG), soweit keine gesetzlichen Pflichten entgegenstehen. Schreiben Sie dazu an <a href={`mailto:${O.email}`}>{O.email}</a>.</p>
+    <p>Sie haben zudem das Recht, sich beim <a href="https://www.edoeb.admin.ch" target="_blank" rel="noopener">Eidgenössischen Datenschutz- und Öffentlichkeitsbeauftragten (EDÖB)</a> zu beschweren.</p>
+  </section>
+
+  <section>
+    <h2>12. Änderungen</h2>
+    <p>Wir passen diese Datenschutzerklärung an, wenn sich die Website oder die Rechtslage ändert. Es gilt die hier veröffentlichte Fassung.</p>
+    <p class="legal-date">Stand: {UPDATED}</p>
+  </section>
+</Legal>

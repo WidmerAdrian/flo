@@ -1,0 +1,57 @@
+---
+import Legal from "../layouts/Legal.astro";
+import { OPERATOR as O, PRACTICE as P, PHOTOS } from "../data/legal.js";
+---
+<Legal title="Impressum" description="Impressum von Therapiezentrum Strähl, medizinische Massage in Oftringen.">
+  <section>
+    <h2>Betreiberin dieser Website</h2>
+    <address>{O.name}<br />{O.street}<br />{O.city}<br />{O.country}</address>
+    <dl>
+      <div><dt>Vertretungsberechtigte Person</dt><dd>{O.person}</dd></div>
+      <div><dt>E-Mail</dt><dd><a href={`mailto:${O.email}`}>{O.email}</a></dd></div>
+      <div><dt>Telefon</dt><dd><a href={`tel:${O.phone.replace(/\s/g, "")}`}>{O.phone}</a></dd></div>
+      <div><dt>Handelsregister-Nr.</dt><dd>{O.register}</dd></div>
+      <div><dt>UID</dt><dd>{O.uid}</dd></div>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Praxis und Inhalt</h2>
+    <address>{P.name}<br />{P.person}, {P.role}<br />{P.street}<br />{P.city}</address>
+    <dl><div><dt>Telefon</dt><dd><a href={`tel:${P.phone.replace(/\s/g, "")}`}>{P.phone}</a></dd></div></dl>
+  </section>
+
+  <section>
+    <h2>Haftungsausschluss</h2>
+    <p>Die Inhalte dieser Website wurden mit Sorgfalt erstellt. Für ihre Richtigkeit, Vollständigkeit und Aktualität übernehmen wir jedoch keine Gewähr. Die Informationen zu Beschwerden und Behandlungen dienen der allgemeinen Orientierung und ersetzen keine ärztliche Abklärung oder Beratung.</p>
+    <p>Haftungsansprüche wegen Schäden materieller oder immaterieller Art, die aus dem Zugriff auf oder der Nutzung der veröffentlichten Informationen, durch Missbrauch der Verbindung oder durch technische Störungen entstanden sind, werden ausgeschlossen, soweit gesetzlich zulässig.</p>
+  </section>
+
+  <section>
+    <h2>Haftung für Links</h2>
+    <p>Verweise auf Websites Dritter liegen ausserhalb unseres Verantwortungsbereichs. Für deren Inhalte sind ausschliesslich die jeweiligen Betreiber verantwortlich. Der Zugriff und die Nutzung solcher Websites erfolgen auf eigene Gefahr.</p>
+  </section>
+
+  <section>
+    <h2>Urheberrechte</h2>
+    <p>Texte, Logo, das Porträt von Florian Strähl und die Gestaltung dieser Website gehören dem Therapiezentrum Strähl. Für die Wiedergabe oder Verwendung, auch auszugsweise, ist die vorherige schriftliche Zustimmung erforderlich. Für Bilder und Werke Dritter gelten die unten genannten Lizenzen.</p>
+  </section>
+
+  <section>
+    <h2>Bildnachweise</h2>
+    <p>Die folgenden Fotografien stammen von <a href="https://www.pexels.com" target="_blank" rel="noopener">Pexels</a> und werden nach der <a href="https://www.pexels.com/license/" target="_blank" rel="noopener">Pexels-Lizenz</a> verwendet (freie Nutzung, Namensnennung nicht erforderlich). Einzelne Bilder wurden zugeschnitten, freigestellt oder farblich angepasst.</p>
+    <ul class="credits">
+      {PHOTOS.map(([where, who, url]) => <li><span>{where}</span><a href={url} target="_blank" rel="noopener">{who}</a></li>)}
+    </ul>
+  </section>
+
+  <section>
+    <h2>3D-Figur und Software</h2>
+    <ul class="credits">
+      <li><span>3D-Körperfigur, Haut, Augen und Frisur</span><a href="https://static.makehumancommunity.org/about/license.html" target="_blank" rel="noopener">MakeHuman, CC0</a></li>
+      <li><span>Erstellt mit Blender und MPFB 2</span><a href="https://www.blender.org" target="_blank" rel="noopener">blender.org</a></li>
+      <li><span>3D-Darstellung im Browser</span><a href="https://threejs.org" target="_blank" rel="noopener">three.js, MIT-Lizenz</a></li>
+      <li><span>Website-Grundgerüst</span><a href="https://astro.build" target="_blank" rel="noopener">Astro, MIT-Lizenz</a></li>
+    </ul>
+  </section>
+</Legal>

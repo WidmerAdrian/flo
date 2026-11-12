@@ -1,0 +1,19 @@
+{
+  "name": "therapiezentrum-straehl",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "model": "node scripts/make-body.mjs",
+    "blender": "/Applications/Blender.app/Contents/MacOS/Blender -b --python scripts/body.blender.py && node scripts/make-body.mjs"
+  },
+  "dependencies": {
+    "astro": "^7.4.11",
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "meshoptimizer": "^1.3.0"
+  }
+}

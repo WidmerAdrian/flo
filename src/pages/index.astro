@@ -1,0 +1,229 @@
+---
+import { existsSync, readFileSync } from "node:fs";
+import "../styles/site.css";
+import { BOOK, FORM, MAPS, PHONE, REGIONS, TEL, TREATMENTS } from "../data/content.js";
+import body from "../data/body.json";
+
+const root = process.cwd();
+const file = (p) => readFileSync(`${root}/${p}`, "utf8");
+// Hairline: the kernel is the package's engine, unchanged; each figure is one file from figures/, checked with the skill's look.mjs.
+const OLD = { ruecken: "kneten", bein: "lymph", zug: "schichten", wade: "rolle", knie: "tape" };
+const figName = (n) => (existsSync(`${root}/figures/${n}.js`) ? n : OLD[n]);
+const cards = Object.entries(TREATMENTS).map(([id, t], i) => ({ id, i, ...t, fig: figName(t.fig) }));
+// The Hairline line drawings (figures/*.js) are switched off for now; set this to true to show them on the cards again.
+const SHOW_FIGURES = false;
+const kernel = SHOW_FIGURES ? file("vendor/hairline-kernel.js") : "";
+// Optional photographs: drop a file into public/assets/img/ and rebuild; a missing one simply is not shown.
+const img = (name) => ["webp", "jpg", "png"].map((e) => `assets/img/${name}.${e}`).find((f) => existsSync(`${root}/public/${f}`));
+// Placeholder photographs from Pexels (free licence, no credit required); replace with the practice's own.
+const photos = { leaves: img("leaves"), person: img("person"), florian: img("florian"), stage: img("stage"), mood: img("mood"), contact: img("contact") || img("leaves") };
+const treatImgs = Object.fromEntries(cards.map((c) => [c.id, img(c.id)]).filter(([, f]) => f));
+const figures = SHOW_FIGURES ? cards.map((c) => `{\n${file(`figures/${c.fig}.js`).trim()}\n}`).join("\n") : "";
+---
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="claude:viewport-fit-sides" content="cover" />
+  <meta name="theme-color" content="#07140f" />
+  <link rel="icon" type="image/png" href="assets/straehl-logo.png" />
+  <title>Therapiezentrum Strähl</title>
+  <meta name="description" content="Medizinische Massage in Oftringen. Zeigen Sie uns, wo es drückt, und finden Sie die passende Behandlung. Von allen Krankenkassen anerkannt, abrechenbar über die Zusatzversicherung." />
+</head>
+<body data-imgs={JSON.stringify(treatImgs)}>
+<div class="ambient" aria-hidden="true"></div>
+<svg class="sprite" aria-hidden="true">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7" /></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7" /></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" /></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6" /></symbol>
+  <symbol id="i-turn" viewBox="0 0 24 24"><path d="M3 12a9 4 0 0 0 18 0M21 12a9 4 0 0 0-9-4M12 5l-3 3 3 3" /></symbol>
+</svg>
+
+<div class="splash" aria-hidden="true"><div class="splash-logo"><img src="assets/straehl-logo.png" width="188" height="120" alt="" /></div></div>
+
+<main id="top">
+  <section class="hero" aria-labelledby="h1">
+    <div class="hero-media" aria-hidden="true" style={photos.leaves && `background-image:url(${photos.leaves})`} data-photo={photos.leaves}>
+      <canvas class="hero-gl"></canvas>
+      {photos.person && <img class="hero-person" src={photos.person} alt="" fetchpriority="high" decoding="async" />}
+    </div>
+    <header class="top">
+      <a class="nav" href="#massagen">Massagen</a>
+      <a class="brand" id="brand" href="#top" aria-label="Therapiezentrum Strähl"><img src="assets/straehl-logo.png" width="188" height="120" alt="" /></a>
+      <a class="nav" href={BOOK} target="_blank" rel="noopener">Termin</a>
+    </header>
+    <div class="hero-txt wrap intro">
+      <div class="hero-title">
+        <p class="kicker" style="--d:1">Medizinische Massage in Oftringen</p>
+        <h1 id="h1" style="--d:2">Loslassen.</h1>
+        <p class="hero-lead" style="--d:3">Behandlungen, die Ihren Körper spürbar entlasten.</p>
+        <a class="btn hero-go" href="#koerper" style="--d:4">Wo drückt’s?<svg class="ic"><use href="#i-down" /></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="explore" id="koerper" aria-labelledby="h-b">
+    <canvas class="gl" aria-hidden="true"></canvas>
+    <div class="hero-grid wrap">
+      <div class="hero-copy rv">
+        <p class="kicker">Ihr Körper</p>
+        <h2 id="h-b">Wo <span class="hl">drückt’s?</span></h2>
+        <p class="lead">Tippen Sie auf die Stelle, die Ihnen Mühe macht. Wir zeigen, welche Massage hilft.</p>
+      </div>
+      <div class="stage" id="stage" data-photo={photos.stage} role="img" aria-label="Drehbare Körperfigur. Wählen Sie eine Körperregion.">
+        <svg class="poster" viewBox="0 0 360 840" aria-hidden="true"><g transform={body.tfFront}><path d={body.frontBody} /><path d={body.frontHead} /></g></svg>
+        <div class="ground"></div>
+        <div class="spots"></div>
+      </div>
+      <div class="hero-ui">
+        <div class="seg" id="seg" data-view="0" role="group" aria-label="Ansicht">
+          <button type="button" aria-pressed="true">Vorne</button><button type="button" aria-pressed="false">Hinten</button>
+        </div>
+        <p class="hint"><svg class="ic"><use href="#i-turn" /></svg>Ziehen zum Drehen</p>
+      </div>
+    </div>
+    <div class="regions" aria-label="Körperregion wählen">
+      <ul id="regions">
+        {Object.entries(REGIONS).map(([id, r]) => <li><button type="button" data-region={id}>{r.label}</button></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <ul class="facts-row wrap rv">
+    <li><b>Eidg.</b><span>Fachausweis als medizinischer Masseur</span></li>
+    <li><b>Alle</b><span>Krankenkassen anerkannt, über die Zusatzversicherung</span></li>
+    <li><b>6 Tage</b><span>die Woche offen, abends bis 20 Uhr</span></li>
+  </ul>
+
+  <section class="sec" id="massagen" aria-labelledby="h-m">
+    <div class="wrap head rv">
+      <p class="kicker">Sechs Massagen</p>
+      <h2 id="h-m">Massage, die <span class="hl">ankommt.</span></h2>
+      <p class="sub">Von sanfter Lymphdrainage bis zur kräftigen Sportmassage. Jede Behandlung abgestimmt auf Ihre Beschwerden.</p>
+    </div>
+    <div class="stack wrap">
+      {cards.map((c) => (
+        <article class={`card tone-${c.tone}`} style={`--i:${c.i}`}>
+          <div class="card-photo">{treatImgs[c.id] && <img src={treatImgs[c.id]} style={`object-position:${c.pos}`} alt="" loading="lazy" decoding="async" />}</div>
+          <span class="num">{String(c.i + 1).padStart(2, "0")}<small> / 06</small></span>
+          {SHOW_FIGURES && <div class="card-lens"><span class="read" aria-hidden="true"></span><div data-fig={c.fig}></div></div>}
+          <div class="card-txt">
+            <h3>{c.name}</h3>
+            <p>{c.desc}</p>
+            <ul class="tags">{c.helps.slice(0, 3).map((h) => <li>{h}</li>)}</ul>
+            <button class="more" type="button" data-t={c.id}>Mehr erfahren<span><svg class="ic"><use href="#i-arrow" /></svg></span></button>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  {photos.mood && (
+    <section class="band" aria-label="Die Praxis">
+      <div class="band-media" aria-hidden="true"><img src={photos.mood} alt="" loading="lazy" decoding="async" /></div>
+      <div class="wrap rv"><p class="kicker">Die Praxis</p><h2>Ruhe, Wärme, <span class="hl">geübte Hände.</span></h2></div>
+    </section>
+  )}
+
+  <section class="sec therapist" id="therapeut" aria-labelledby="h-t">
+    <div class="th-media" aria-hidden="true" data-photo={photos.stage}><canvas class="th-gl"></canvas></div>
+    <div class="th-grid">
+    <div class="th-stage">
+      <p class="kicker wrap">Ihr Therapeut</p>
+      <h2 id="h-t" class="th-name" aria-label="Florian Strähl"><span>Florian</span><span>Strähl</span></h2>
+      <img class="th-person" src={photos.florian || "assets/florian-straehl.webp"} width="630" height="802" alt="Florian Strähl" loading="lazy" decoding="async" />
+    </div>
+    <div class="wrap th-info">
+      <div class="head rv">
+        <h3 class="th-claim">Mit Hand <span class="hl">und Herz.</span></h3>
+        <p class="sub">Florian findet mit ruhiger, geübter Hand die Ursache Ihrer Beschwerden und nimmt sich Zeit für eine Behandlung, die Sie wirklich spüren.</p>
+      </div>
+      <dl class="facts rv">
+        <div><dt>Abschluss</dt><dd>Medizinischer Masseur mit eidg. Fachausweis</dd></div>
+        <div><dt>Ausbildung</dt><dd>Medizinische Fachschule Zentralschweiz</dd></div>
+        <div><dt>Krankenkassen</dt><dd>Von allen Krankenkassen anerkannt. Medizinische Massagen rechnen Sie über die Zusatzversicherung ab.</dd></div>
+      </dl>
+      <div class="blk rv th-treats">
+        <h4>Seine Behandlungen</h4>
+        <ul class="rows">
+          {cards.map((c) => <li><button class="row" type="button" data-t={c.id}><span>{c.name}</span><svg class="ic"><use href="#i-chev" /></svg></button></li>)}
+        </ul>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <section class="contact" id="kontakt" aria-labelledby="h-k">
+    {photos.contact && <img src={photos.contact} alt="" loading="lazy" decoding="async" />}
+    <div class="wrap contact-grid">
+      <div class="contact-main">
+        <p class="kicker" id="status"><span>Montag bis Samstag geöffnet</span></p>
+        <h2 id="h-k">Lassen Sie uns <span class="hl">draufschauen.</span></h2>
+        <a class="tel" href={TEL}>{PHONE}</a>
+        <div class="cta">
+          <a class="btn" href={BOOK} target="_blank" rel="noopener">Termin buchen<svg class="ic"><use href="#i-arrow" /></svg></a>
+          <a class="btn ghost" href={FORM} target="_blank" rel="noopener">Nachricht schreiben</a>
+        </div>
+      </div>
+      <div class="contact-side">
+        <ul class="hours" id="hours">
+          <li data-d="1234"><span>Mo bis Do</span><span>8 bis 20 Uhr</span></li>
+          <li data-d="5"><span>Freitag</span><span>8 bis 17 Uhr</span></li>
+          <li data-d="6"><span>Samstag</span><span>10 bis 14 Uhr</span></li>
+          <li data-d="0"><span>Sonntag</span><span>Geschlossen</span></li>
+        </ul>
+        <a class="route" href={MAPS} target="_blank" rel="noopener"><span><b>Zimmereiweg 7</b><small>4665 Oftringen, Region Zofingen</small></span><span class="go">Route<svg class="ic"><use href="#i-arrow" /></svg></span></a>
+      </div>
+    </div>
+    <footer class="wrap"><img src="assets/straehl-logo.png" width="188" height="120" alt="" loading="lazy" /><span>© 2026 Therapiezentrum Strähl, Oftringen</span><nav class="foot-links" aria-label="Rechtliches"><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></nav></footer>
+  </section>
+</main>
+
+<nav class="dock" id="dock" aria-label="Kontakt">
+  <a class="dock-call" href={TEL} aria-label={`Anrufen ${PHONE}`}><svg class="ic"><use href="#i-phone" /></svg></a>
+  <a class="dock-book" href={BOOK} target="_blank" rel="noopener">Termin buchen</a>
+</nav>
+
+<dialog class="sheet" id="sheet" aria-labelledby="sh-title">
+  <div class="sh-grab" id="sh-top" aria-hidden="true"></div>
+  <button class="round sh-btn" id="sh-back" type="button" aria-label="Zurück" hidden><svg class="ic"><use href="#i-back" /></svg></button>
+  <button class="round sh-btn" id="sh-x" type="button" aria-label="Schliessen"><svg class="ic"><use href="#i-x" /></svg></button>
+  <div class="sh-scroll" id="sh-scroll" tabindex="-1" autofocus>
+    <header class="sh-head" id="sh-head">
+      <img class="sh-photo" id="sh-photo" alt="" decoding="async" hidden />
+      <div class="sh-ttl"><p id="sh-kick"></p><h3 id="sh-title"></h3></div>
+    </header>
+    <div class="sh-body" id="sh-body"></div>
+  </div>
+  <div class="sh-foot">
+    <a class="btn" href={BOOK} target="_blank" rel="noopener">Termin buchen</a>
+    <a class="btn soft" href={TEL}><svg class="ic"><use href="#i-phone" /></svg>{PHONE}</a>
+  </div>
+</dialog>
+
+{SHOW_FIGURES && <script is:inline set:html={kernel}></script>}
+<script is:inline>
+  // Hairline host: mounts each figure in its card. The kernel sleeps figures offscreen and walks each figure's
+  // tour with an unseen pointer until a real one arrives, so on phones they move by themselves.
+  window.hairline = (f) => {
+    const stage = document.querySelector(`[data-fig="${f.name}"]`);
+    if (!stage) return;
+    HL.inject(document);
+    stage.setAttribute("data-hairline", f.name);
+    stage.setAttribute("role", "img");
+    stage.setAttribute("aria-label", f.means);
+    const svg = HL.mk("svg", { viewBox: "0 0 400 320", "aria-hidden": "true" }, stage), out = stage.parentElement.querySelector(".read");
+    f.mount({ stage, svg, read: { get textContent() { return out.textContent; }, set textContent(v) { out.textContent = v === "rest" ? "" : v; } } }, f.range[1]);
+    HL.tour(stage, f.tour || HL.LAP);
+  };
+</script>
+{SHOW_FIGURES && <script is:inline type="module" set:html={figures}></script>}
+<script>
+  import "../scripts/app.js";
+</script>
+</body>
+</html>
