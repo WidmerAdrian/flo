@@ -90,6 +90,36 @@ const FLOW_STEP = /* glsl */ `
 const VERT = "attribute vec2 a; varying vec2 vUv; void main(){ vUv = a * .5 + .5; gl_Position = vec4(a, 0., 1.); }";
 
 /** A section's background: water over a photograph, drifting with `setOffset`, stirred by `stir`. Null without WebGL. */
+// A cut-out on its own canvas (padded around the image), moved by whole-GPU sampling instead of by the browser's
+// pixel grid: that is what keeps a slow drift smooth in Safari. Returns { set(x, y) } in CSS pixels, or null.
+export function mountLayer(canvas, img, pad) {
+  const gl = canvas.getContext("webgl", { antialias: false, alpha: true, premultipliedAlpha: true, powerPreference: "low-power" });
+  if (!gl) return null;
+  const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+  const p = gl.createProgram();
+  gl.attachShader(p, sh(gl.VERTEX_SHADER, VERT));
+  gl.attachShader(p, sh(gl.FRAGMENT_SHADER, "precision mediump float; varying vec2 vUv; uniform sampler2D img; uniform vec4 r; void main(){ vec2 uv = (vec2(vUv.x, 1. - vUv.y) - r.xy) / r.zw; gl_FragColor = uv == clamp(uv, 0., 1.) ? texture2D(img, uv) : vec4(0.); }"));
+  gl.bindAttribLocation(p, 0, "a"); gl.linkProgram(p); gl.useProgram(p);
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+  gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+  gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+  for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v);
+  const r = gl.getUniformLocation(p, "r");
+  let x = 0, y = 0;
+  const draw = () => {
+    const w = canvas.clientWidth, h = canvas.clientHeight, d = Math.min(devicePixelRatio || 1, 2);
+    if (!w) return;
+    if (canvas.width !== Math.round(w * d)) { canvas.width = Math.round(w * d); canvas.height = Math.round(h * d); gl.viewport(0, 0, canvas.width, canvas.height); }
+    gl.uniform4f(r, (pad + x) / w, (pad + y) / h, 1 - 2 * pad / w, 1 - 2 * pad / h);
+    gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLES, 0, 3);
+  };
+  addEventListener("resize", draw); draw();
+  return { set(nx, ny) { x = nx; y = ny; draw(); } };
+}
+
 export function mountWater(canvas, photo, { mix = 0.85, auto = false, fade = [0, .45], front = null } = {}) {
   const gl = canvas.getContext("webgl", { antialias: false, alpha: true, premultipliedAlpha: true, powerPreference: "low-power" });
   if (!gl) return null;
@@ -140,6 +170,7 @@ export function mountWater(canvas, photo, { mix = 0.85, auto = false, fade = [0,
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, front);
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
     for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v);
+    front.style.animation = "none"; // measure where the page lays it out, not a frame of its entrance (a transform shifts the box)
     fgReady = true; measureFront(); canvas.dispatchEvent(new Event("front")); wake();
   }
   if (front) (front.complete && front.naturalWidth ? Promise.resolve() : new Promise((ok) => front.addEventListener("load", ok, { once: true }))).then(() => front.decode?.().catch(() => {})).then(loadFront);

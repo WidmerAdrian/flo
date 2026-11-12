@@ -88,7 +88,8 @@ body:has(.splash) #brand img { opacity: 0; animation: brand-show 0s 5s forwards;
 .hero-media:has(.on), .th-media:has(.on) { background: none !important; /* !important: the fallback photo is set inline */ -webkit-mask-image: none; mask-image: none; } /* with WebGL the shader fades the water out itself: no mask over a layer that changes every frame */
 .hero-gl { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1.6s ease; }
 .hero-gl.on { opacity: 1; }
-.hero-person { position: absolute; left: 50%; bottom: 24svh; height: min(70svh, 640px); width: auto; max-width: none; translate: -46% 0; animation: person-in 1.6s var(--flow) 1.5s both; }
+/* the hands come down from the top edge: the layer reaches 48px above it, so parallax and the entrance never lift the arms off it */
+.hero-person { position: absolute; left: 50%; top: -48px; height: min(80svh, 760px); width: auto; max-width: none; translate: -50% 0; animation: person-in 1.6s var(--flow) 1.5s both; }
 @keyframes person-in { from { opacity: 0; transform: translateY(40px) scale(.97); } }
 .hero::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; -webkit-mask-image: linear-gradient(#000 50%, transparent); mask-image: linear-gradient(#000 50%, transparent); background:
   linear-gradient(180deg, rgba(7, 20, 15, .55), transparent 18%, transparent 46%, rgba(7, 20, 15, .72) 74%, transparent),
@@ -99,7 +100,8 @@ body:has(.splash) #brand img { opacity: 0; animation: brand-show 0s 5s forwards;
 .nav:last-child { justify-self: end; }
 .brand { display: grid; place-items: center; }
 .brand img { width: 44px; height: 44px; padding: 9px 6px; object-fit: contain; background: #fff; border-radius: 50%; }
-.hero-txt { display: grid; gap: 36px; padding-block: 140px calc(44px + env(safe-area-inset-bottom, 0px)); }
+.brand-name { display: none; }
+.hero-txt { display: grid; gap: 28px; padding-block: 140px calc(36px + env(safe-area-inset-bottom, 0px)); }
 .hero-lead { max-width: 30ch; font-size: 1.0625rem; line-height: 1.45; color: var(--text); text-wrap: pretty; }
 .hero-title { display: grid; gap: 12px; justify-items: start; }
 .hero .kicker { color: var(--cream); opacity: .85; }
@@ -133,8 +135,12 @@ body:has(.splash) #brand img { opacity: 0; animation: brand-show 0s 5s forwards;
 .spot.off, .stage.dragging .spot, .stage.has-pick .spot { opacity: 0; pointer-events: none; }
 @media (hover: hover) { .spot:hover::before { background: var(--hurt); transform: scale(1.7); } }
 .hero-ui { display: flex; align-items: center; justify-content: space-between; gap: 12px; position: relative; z-index: 2; margin-top: -4px; }
-.hint { display: flex; align-items: center; gap: 7px; font-size: .875rem; color: var(--text); }
-.hint .ic { font-size: 18px; }
+/* the turn sign: a quiet ring beside the figure's shoulder, rocking the way the figure turns; it leaves once you touch */
+.stage { container-type: size; }
+.turn { position: absolute; z-index: 2; top: 24%; left: calc(50% + 23cqh); display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; color: var(--cream); background: rgba(7, 20, 15, .35); box-shadow: inset 0 0 0 1px var(--line); pointer-events: none; transition: opacity .6s; }
+.turn .ic { font-size: 22px; animation: rock 3.6s ease-in-out infinite; }
+@keyframes rock { 0%, 100% { rotate: -16deg; } 50% { rotate: 16deg; } }
+.stage.dragging .turn, .stage.has-pick .turn, .stage.no3d .turn { opacity: 0; }
 .seg { position: relative; display: grid; grid-template-columns: 1fr 1fr; width: 184px; padding: 3px; border-radius: 999px; background: rgba(236, 230, 214, .08); box-shadow: inset 0 0 0 1px var(--line); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
 .seg::before { content: ""; position: absolute; inset: 3px auto 3px 3px; width: calc(50% - 3px); border-radius: 999px; background: var(--cream); transition: transform .8s var(--spring); }
 .seg[data-view="1"]::before { transform: translateX(100%); }
@@ -184,8 +190,6 @@ body:has(.splash) #brand img { opacity: 0; animation: brand-show 0s 5s forwards;
 /* the line drawing sits on it like a pane of glass: what the hands do, drawn out */
 .card-lens { grid-area: photo; align-self: end; justify-self: end; position: relative; z-index: 2; width: min(60%, 260px); margin: 0 16px -8px 0; border-radius: 24px; overflow: hidden; background: rgba(9, 24, 18, .52); -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%); box-shadow: inset 0 0 0 1px rgba(239, 232, 216, .14), 0 22px 44px -22px rgba(0, 0, 0, .9); }
 .card [data-fig] { touch-action: pan-x pan-y; --hairline-plate: #11261d; --hairline-hi: var(--ac); --hairline-edge: rgba(239, 232, 216, .86); --hairline-mid: rgba(239, 232, 216, .45); --hairline-lo: rgba(239, 232, 216, .2); --hairline-stroke: 1; }
-.num { position: absolute; top: 20px; left: 24px; z-index: 2; text-shadow: 0 1px 12px rgba(0, 0, 0, .5); font-size: 1.25rem; font-weight: 300; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
-.num small { font-size: .8125rem; font-weight: 500; opacity: .6; letter-spacing: 0; }
 .read { position: absolute; top: 12px; right: 14px; z-index: 1; font: .6875rem/1 var(--mono); opacity: .75; pointer-events: none; }
 .card-txt { grid-area: txt; display: grid; gap: 12px; padding: 22px 24px 24px; min-width: 0; position: relative; z-index: 1; }
 .card h3 { color: var(--fg); font-size: clamp(2rem, 8.6vw, 3rem); line-height: 1; letter-spacing: -.045em; font-weight: 300; }
@@ -209,9 +213,14 @@ body:has(.splash) #brand img { opacity: 0; animation: brand-show 0s 5s forwards;
 .th-stage .kicker { justify-self: stretch; }
 .th-name { position: absolute; inset: 44px 0 auto; display: grid; justify-items: center; font-size: clamp(4.6rem, 26vw, 15rem); line-height: .82; letter-spacing: -.06em; font-weight: 300; color: var(--cream); opacity: .9; pointer-events: none; }
 .th-name span:last-child { color: var(--gold); }
-.th-person { position: relative; width: min(100%, 520px); height: auto; margin-top: calc(44px + 21vw); }
+.th-fig { position: relative; width: min(100%, 520px); margin-top: calc(44px + 21vw); }
+.th-person { display: block; width: 100%; height: auto; }
+/* once the canvas draws him, it drifts him sub-pixel smooth; the <img> only holds the space (and the alt text) */
+.th-fg { position: absolute; left: -24px; top: -24px; width: calc(100% + 48px); height: calc(100% + 48px); pointer-events: none; }
+.th-fig.on .th-person { visibility: hidden; }
+.th-book { display: grid; justify-items: start; gap: 14px; }
+.th-tel { color: var(--text); font-size: .9375rem; }
 .th-info { display: grid; gap: 28px; margin-top: -40px; position: relative; }
-.th-info .th-treats { display: none; } /* phones: the six massages are right above, as cards (two classes: beats the later .blk rule) */
 .th-claim { font-size: clamp(2rem, 8.4vw, 3.25rem); line-height: 1; letter-spacing: -.045em; font-weight: 300; color: var(--cream); }
 .facts > div { display: grid; gap: 3px; padding-block: 16px; border-top: 1px solid var(--line); }
 .facts > div:last-child { border-bottom: 1px solid var(--line); }
@@ -351,7 +360,7 @@ html:has(dialog[open]) .dock { translate: -50% 150%; }
     .card-txt { animation: reveal linear both; animation-timeline: view(); animation-range: entry 8% entry 62%; }
     .th-name { animation: name-drift linear both; animation-timeline: view(); animation-range: entry 0% exit 100%; }
     @keyframes name-drift { from { transform: translateY(-50px); } to { transform: translateY(70px); } }
-    .th-person { animation: rise-in linear both; animation-timeline: view(); animation-range: entry 0% entry 70%; }
+    .th-fig { animation: rise-in linear both; animation-timeline: view(); animation-range: entry 0% entry 70%; }
     @keyframes rise-in { from { opacity: 0; transform: translateY(90px); } }
     .band img { animation: drift linear both; animation-timeline: view(); animation-range: entry 0% exit 100%; }
     @keyframes drift { from { transform: scale(1.14) translateY(-4%); } to { transform: scale(1.02) translateY(4%); } }
@@ -368,22 +377,25 @@ html:has(dialog[open]) .dock { translate: -50% 150%; }
   .card-photo { align-self: stretch; aspect-ratio: auto; height: 100%; min-height: 0; -webkit-mask-image: linear-gradient(90deg, transparent, #000 38%); mask-image: linear-gradient(90deg, transparent, #000 38%); }
   .card-photo::after { background: linear-gradient(200deg, rgba(16, 112, 80, .3), transparent 55%), linear-gradient(90deg, var(--bg), transparent 45%); }
   .card-lens { margin: 0 28px 28px 0; width: min(46%, 280px); }
-  .num { top: 36px; left: 44px; }
-  .card-txt { padding: 80px 0 44px 44px; gap: 16px; }
+  .card-txt { padding: 44px 0 44px 44px; gap: 16px; }
   .more { justify-self: start; min-width: 240px; }
   .th-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; max-width: 1160px; margin-inline: auto; padding-left: var(--gl); padding-right: var(--gr); gap: 40px; }
   .th-stage .kicker { padding: 0; }
   .th-name { font-size: clamp(5rem, 11vw, 10rem); }
-  .th-person { margin-top: calc(44px + min(10vw, 9rem)); }
+  .th-fig { margin-top: calc(44px + min(10vw, 9rem)); }
   .th-info { margin-top: 0; padding: 0; }
-  .th-info .th-treats { display: grid; }
   .contact-grid { grid-template-columns: 1.1fr .9fr; gap: 64px; align-items: end; }
 }
 @media (min-width: 960px) {
   .sec { padding-block: 140px 0; }
   .band, .contact { margin-top: 140px; }
   .hero-txt { justify-items: end; padding-bottom: 72px; }
-  .hero-person { left: 40%; bottom: 0; height: min(94svh, 980px); }
+  /* desktop: the hands come down through the middle, so the logo steps aside to the left and the links go right */
+  .top { grid-template-columns: auto 1fr auto; column-gap: 32px; }
+  .top .brand { order: -1; display: flex; align-items: center; gap: 14px; }
+  .top .nav { justify-self: end; }
+  .brand-name { display: block; font-size: .9375rem; font-weight: 500; color: var(--cream); }
+  .hero-person { left: 40%; height: min(88svh, 900px); } /* the hands above the headline, the back fading out behind it */
   .hero-lead { font-size: 1.1875rem; }
   .hero-title { justify-items: end; text-align: right; }
   .explore { padding-top: 120px; }

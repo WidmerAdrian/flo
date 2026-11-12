@@ -1,7 +1,7 @@
 // Page behaviour: the sheet, region picking, the view switch, the dock and the opening-hours line.
 // The 3D body is a separate chunk, loaded after first paint.
 import { HOURS, REGIONS as R, TREATMENTS as T } from "../data/content.js";
-import { mountWater } from "./water.js";
+import { mountLayer, mountWater } from "./water.js";
 
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const chev = '<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg>';
@@ -93,8 +93,8 @@ const load = () => import("./body3d.js")
 /* ── living water: leaves bent by water behind a section; the mouse stirs it into soft streaks, on phones an unseen hand
       glides by itself; the layers drift with it by their own depth (only their `translate`, so nothing else restyles) ── */
 const still = matchMedia("(prefers-reduced-motion: reduce)"), touch = matchMedia("(hover: none)").matches;
-function liveWater(section, canvas, photo, { fade, front = null, depth = [0, 0] } = {}) {
-  const water = photo ? mountWater(canvas, photo, { auto: touch, fade, front }) : null;
+function liveWater(section, canvas, photo, { fade, front = null, layer = null, depth = [0, 0], mix } = {}) {
+  const water = photo ? mountWater(canvas, photo, { auto: touch, fade, front, mix }) : null;
   // the cut-out is drawn by the shader once ready (sub-pixel smooth); the page keeps its <img> only for layout
   if (water && front) canvas.addEventListener("front", () => section.classList.add("gl-front"), { once: true });
   if (water && front) {
@@ -108,6 +108,7 @@ function liveWater(section, canvas, photo, { fade, front = null, depth = [0, 0] 
     if (touch || !hand) { tx = Math.sin(t * .23) * .55; ty = Math.cos(t * .17) * .4; } // no pointer: a slow breath
     vx += ((tx - x) * 60 - vx * 14) * dt; vy += ((ty - y) * 60 - vy * 14) * dt; x += vx * dt; y += vy * dt; // a soft spring
     water?.setFront(x * depth[0], y * depth[1]);
+    layer?.set(x * depth[0], y * depth[1]);
     water?.setOffset(-x * .014, y * .01);
     raf = onScreen && !still.matches ? requestAnimationFrame(frame) : 0;
   };
@@ -125,7 +126,15 @@ function liveWater(section, canvas, photo, { fade, front = null, depth = [0, 0] 
 const heroMedia = $(".hero-media"), thMedia = $(".th-media");
 // everything that drifts is drawn in the shader: no element is moved by sub-pixel steps the browser would round
 liveWater($(".hero"), $(".hero-gl"), heroMedia?.dataset.photo, { fade: [0, .45], front: $(".hero-person"), depth: [-26, -16] });
-if (thMedia) liveWater($("#therapeut"), $(".th-gl"), thMedia.dataset.photo, { fade: [.3, .68] });
+if (thMedia) {
+  // Florian on his own small canvas in front of his name, drifting against the water behind him
+  const fig = $(".th-fig"), pic = $(".th-person");
+  let layer = null;
+  liveWater($("#therapeut"), $(".th-gl"), thMedia.dataset.photo, { fade: [.46, .66], mix: .62, depth: [-14, -9], /* a long, quiet way in: the leaves rise out of the dark, not in at a line */ layer: { set: (x, y) => layer?.set(x, y) } });
+  if (fig && !still.matches) (pic.complete && pic.naturalWidth ? Promise.resolve() : new Promise((ok) => pic.addEventListener("load", ok, { once: true })))
+    .then(() => pic.decode?.().catch(() => {}))
+    .then(() => { layer = mountLayer($(".th-fg"), pic, 24); if (layer) fig.classList.add("on"); });
+}
 
 /* ── cards: the one underneath sinks back as the next slides over it ── */
 {

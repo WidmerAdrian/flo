@@ -37,7 +37,7 @@ const jsonLd = {
   employee: { "@type": "Person", name: PRACTICE.person, jobTitle: PRACTICE.role },
   hasOfferCatalog: { "@type": "OfferCatalog", name: "Massagen", itemListElement: Object.values(TREATMENTS).map((t) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name: t.name.replace(/\u00AD/g, ""), description: t.desc } })) },
 };
-const photos = { leaves: img("leaves"), person: img("person"), florian: img("florian"), stage: img("stage"), mood: img("mood"), contact: img("contact") || img("leaves") };
+const photos = { leaves: img("leaves"), person: img("hands") || img("person"), florian: img("florian"), stage: img("stage"), mood: img("mood"), contact: img("contact") || img("leaves") };
 const treatImgs = Object.fromEntries(cards.map((c) => [c.id, img(c.id)]).filter(([, f]) => f));
 const figures = SHOW_FIGURES ? cards.map((c) => `{\n${file(`figures/${c.fig}.js`).trim()}\n}`).join("\n") : "";
 ---
@@ -124,7 +124,7 @@ const figures = SHOW_FIGURES ? cards.map((c) => `{\n${file(`figures/${c.fig}.js`
     </div>
     <header class="top">
       <a class="nav" href="#massagen">Massagen</a>
-      <a class="brand" id="brand" href="#top" aria-label="Therapiezentrum Strähl"><img src="assets/straehl-logo.png" width="188" height="120" alt="" /></a>
+      <a class="brand" id="brand" href="#top" aria-label="Therapiezentrum Strähl"><img src="assets/straehl-logo.png" width="188" height="120" alt="" /><span class="brand-name" aria-hidden="true">Therapiezentrum Strähl</span></a>
       <a class="nav" href={BOOK} target="_blank" rel="noopener">Termin</a>
     </header>
     <div class="hero-txt wrap intro">
@@ -149,12 +149,12 @@ const figures = SHOW_FIGURES ? cards.map((c) => `{\n${file(`figures/${c.fig}.js`
         <svg class="poster" viewBox="0 0 360 840" aria-hidden="true"><g transform={body.tfFront}><path d={body.frontBody} /><path d={body.frontHead} /></g></svg>
         <div class="ground"></div>
         <div class="spots"></div>
+        <span class="turn" aria-hidden="true"><svg class="ic"><use href="#i-turn" /></svg></span>
       </div>
       <div class="hero-ui">
         <div class="seg" id="seg" data-view="0" role="group" aria-label="Ansicht">
           <button type="button" aria-pressed="true">Vorne</button><button type="button" aria-pressed="false">Hinten</button>
         </div>
-        <p class="hint"><svg class="ic"><use href="#i-turn" /></svg>Ziehen zum Drehen</p>
       </div>
     </div>
     <div class="regions" aria-label="Körperregion wählen">
@@ -180,7 +180,6 @@ const figures = SHOW_FIGURES ? cards.map((c) => `{\n${file(`figures/${c.fig}.js`
       {cards.map((c) => (
         <article class={`card tone-${c.tone}`} style={`--i:${c.i}`}>
           <div class="card-photo">{treatImgs[c.id] && <img src={treatImgs[c.id]} style={`object-position:${c.pos}`} alt={c.name.replace(/\u00AD/g, "")} loading="lazy" decoding="async" />}</div>
-          <span class="num">{String(c.i + 1).padStart(2, "0")}<small> / 06</small></span>
           {SHOW_FIGURES && <div class="card-lens"><span class="read" aria-hidden="true"></span><div data-fig={c.fig}></div></div>}
           <div class="card-txt">
             <h3>{c.name}</h3>
@@ -206,7 +205,7 @@ const figures = SHOW_FIGURES ? cards.map((c) => `{\n${file(`figures/${c.fig}.js`
     <div class="th-stage">
       <p class="kicker wrap">Ihr Therapeut</p>
       <h2 id="h-t" class="th-name" aria-label="Florian Strähl"><span>Florian</span><span>Strähl</span></h2>
-      <img class="th-person" src={photos.florian || "assets/florian-straehl.webp"} width="630" height="802" alt="Florian Strähl, medizinischer Masseur mit eidg. Fachausweis" loading="lazy" decoding="async" />
+      <div class="th-fig"><img class="th-person" src={photos.florian || "assets/florian-straehl.webp"} width="630" height="802" alt="Florian Strähl, medizinischer Masseur mit eidg. Fachausweis" loading="lazy" decoding="async" /><canvas class="th-fg" aria-hidden="true"></canvas></div>
     </div>
     <div class="wrap th-info">
       <div class="head rv">
@@ -218,11 +217,9 @@ const figures = SHOW_FIGURES ? cards.map((c) => `{\n${file(`figures/${c.fig}.js`
         <div><dt>Ausbildung</dt><dd>Medizinische Fachschule Zentralschweiz</dd></div>
         <div><dt>Krankenkassen</dt><dd>Von allen Krankenkassen anerkannt. Medizinische Massagen rechnen Sie über die Zusatzversicherung ab.</dd></div>
       </dl>
-      <div class="blk rv th-treats">
-        <h4>Seine Behandlungen</h4>
-        <ul class="rows">
-          {cards.map((c) => <li><button class="row" type="button" data-t={c.id}><span>{c.name}</span><svg class="ic"><use href="#i-chev" /></svg></button></li>)}
-        </ul>
+      <div class="th-book rv">
+        <a class="btn" href={BOOK} target="_blank" rel="noopener">Termin bei Florian buchen<svg class="ic"><use href="#i-arrow" /></svg></a>
+        <a class="th-tel" href={TEL}>oder anrufen: {PHONE}</a>
       </div>
     </div>
     </div>
