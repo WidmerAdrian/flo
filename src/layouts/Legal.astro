@@ -1,18 +1,16 @@
 ---
 // A plain page for legal texts: same look as the site, no 3D, no water, nothing animated.
 import "../styles/site.css";
-const { title, description } = Astro.props;
+import Seo from "../components/Seo.astro";
+const { title, description, path } = Astro.props;
 ---
 <!doctype html>
-<html lang="de">
+<html lang="de-CH">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#07140f" />
-  <meta name="robots" content="noindex" />
-  <link rel="icon" type="image/png" href="assets/straehl-logo.png" />
-  <title>{title} | Therapiezentrum Strähl</title>
-  <meta name="description" content={description} />
+  <Seo title={`${title} | Therapiezentrum Strähl`} description={description} path={path} noindex />
 </head>
 <body class="legal-page">
 <div class="ambient" aria-hidden="true"></div>

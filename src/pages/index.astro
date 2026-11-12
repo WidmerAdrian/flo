@@ -3,6 +3,9 @@ import { existsSync, readFileSync } from "node:fs";
 import "../styles/site.css";
 import { BOOK, FORM, MAPS, PHONE, REGIONS, TEL, TREATMENTS } from "../data/content.js";
 import body from "../data/body.json";
+import Seo from "../components/Seo.astro";
+import { HOURS } from "../data/content.js";
+import { OPERATOR, PRACTICE } from "../data/legal.js";
 
 const root = process.cwd();
 const file = (p) => readFileSync(`${root}/${p}`, "utf8");
@@ -16,20 +19,37 @@ const kernel = SHOW_FIGURES ? file("vendor/hairline-kernel.js") : "";
 // Optional photographs: drop a file into public/assets/img/ and rebuild; a missing one simply is not shown.
 const img = (name) => ["webp", "jpg", "png"].map((e) => `assets/img/${name}.${e}`).find((f) => existsSync(`${root}/public/${f}`));
 // Placeholder photographs from Pexels (free licence, no credit required); replace with the practice's own.
+// Structured data for search engines: the practice, where, when open, what it offers.
+const at = (p) => new URL(p, Astro.site).href;
+const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const [zip, ...town] = PRACTICE.city.split(" ");
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "MedicalBusiness",
+  "@id": at("/#praxis"),
+  name: PRACTICE.name,
+  description: "Medizinische Massage in Oftringen: klassische Massage, Lymphdrainage, Sportmassage und mehr. Von allen Krankenkassen anerkannt, abrechenbar über die Zusatzversicherung.",
+  url: at("/"), image: at("og.jpg"), logo: at("icon-512.png"),
+  telephone: PRACTICE.phone, email: OPERATOR.email,
+  address: { "@type": "PostalAddress", streetAddress: PRACTICE.street, postalCode: zip, addressLocality: town.join(" "), addressRegion: "AG", addressCountry: "CH" },
+  areaServed: ["Oftringen", "Zofingen", "Aarburg", "Rothrist", "Strengelbach"],
+  openingHoursSpecification: Object.entries(HOURS).map(([d, [o, c]]) => ({ "@type": "OpeningHoursSpecification", dayOfWeek: DAYS[d], opens: `${String(o).padStart(2, "0")}:00`, closes: `${String(c).padStart(2, "0")}:00` })),
+  employee: { "@type": "Person", name: PRACTICE.person, jobTitle: PRACTICE.role },
+  hasOfferCatalog: { "@type": "OfferCatalog", name: "Massagen", itemListElement: Object.values(TREATMENTS).map((t) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name: t.name.replace(/\u00AD/g, ""), description: t.desc } })) },
+};
 const photos = { leaves: img("leaves"), person: img("person"), florian: img("florian"), stage: img("stage"), mood: img("mood"), contact: img("contact") || img("leaves") };
 const treatImgs = Object.fromEntries(cards.map((c) => [c.id, img(c.id)]).filter(([, f]) => f));
 const figures = SHOW_FIGURES ? cards.map((c) => `{\n${file(`figures/${c.fig}.js`).trim()}\n}`).join("\n") : "";
 ---
 <!doctype html>
-<html lang="de">
+<html lang="de-CH">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="claude:viewport-fit-sides" content="cover" />
   <meta name="theme-color" content="#07140f" />
-  <link rel="icon" type="image/png" href="assets/straehl-logo.png" />
-  <title>Therapiezentrum Strähl</title>
-  <meta name="description" content="Medizinische Massage in Oftringen. Zeigen Sie uns, wo es drückt, und finden Sie die passende Behandlung. Von allen Krankenkassen anerkannt, abrechenbar über die Zusatzversicherung." />
+  <Seo title="Medizinische Massage in Oftringen | Therapiezentrum Strähl" description="Medizinische Massage in Oftringen: klassische Massage, Lymphdrainage, Sportmassage und mehr. Eidg. Fachausweis, von allen Krankenkassen anerkannt." />
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 </head>
 <body data-imgs={JSON.stringify(treatImgs)}>
 <div class="ambient" aria-hidden="true"></div>
@@ -159,7 +179,7 @@ const figures = SHOW_FIGURES ? cards.map((c) => `{\n${file(`figures/${c.fig}.js`
     <div class="stack wrap">
       {cards.map((c) => (
         <article class={`card tone-${c.tone}`} style={`--i:${c.i}`}>
-          <div class="card-photo">{treatImgs[c.id] && <img src={treatImgs[c.id]} style={`object-position:${c.pos}`} alt="" loading="lazy" decoding="async" />}</div>
+          <div class="card-photo">{treatImgs[c.id] && <img src={treatImgs[c.id]} style={`object-position:${c.pos}`} alt={c.name.replace(/\u00AD/g, "")} loading="lazy" decoding="async" />}</div>
           <span class="num">{String(c.i + 1).padStart(2, "0")}<small> / 06</small></span>
           {SHOW_FIGURES && <div class="card-lens"><span class="read" aria-hidden="true"></span><div data-fig={c.fig}></div></div>}
           <div class="card-txt">
@@ -186,7 +206,7 @@ const figures = SHOW_FIGURES ? cards.map((c) => `{\n${file(`figures/${c.fig}.js`
     <div class="th-stage">
       <p class="kicker wrap">Ihr Therapeut</p>
       <h2 id="h-t" class="th-name" aria-label="Florian Strähl"><span>Florian</span><span>Strähl</span></h2>
-      <img class="th-person" src={photos.florian || "assets/florian-straehl.webp"} width="630" height="802" alt="Florian Strähl" loading="lazy" decoding="async" />
+      <img class="th-person" src={photos.florian || "assets/florian-straehl.webp"} width="630" height="802" alt="Florian Strähl, medizinischer Masseur mit eidg. Fachausweis" loading="lazy" decoding="async" />
     </div>
     <div class="wrap th-info">
       <div class="head rv">
