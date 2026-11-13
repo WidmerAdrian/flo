@@ -37,7 +37,7 @@ const jsonLd = {
   employee: { "@type": "Person", name: PRACTICE.person, jobTitle: PRACTICE.role },
   hasOfferCatalog: { "@type": "OfferCatalog", name: "Massagen", itemListElement: Object.values(TREATMENTS).map((t) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name: t.name.replace(/\u00AD/g, ""), description: t.desc } })) },
 };
-const photos = { leaves: img("leaves"), person: img("hands") || img("person"), florian: img("florian"), stage: img("stage"), mood: img("mood"), contact: img("contact") || img("leaves") };
+const photos = { leaves: img("leaves"), person: img("hands") || img("person"), florian: img("florian"), stage: img("stage"), mood: img("mood"), contact: img("contact") /* no photo behind the contact block: the plain page gradient, like the cards */ };
 const treatImgs = Object.fromEntries(cards.map((c) => [c.id, img(c.id)]).filter(([, f]) => f));
 const figures = SHOW_FIGURES ? cards.map((c) => `{\n${file(`figures/${c.fig}.js`).trim()}\n}`).join("\n") : "";
 ---
